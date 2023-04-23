@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Image Generator</title>
+    <script>
+        function updateColorOptions() {
+            const wineType = document.getElementById('wine_type').value;
+            const colorSelect = document.getElementById('color');
+            let options;
+
+            if (wineType === 'white') {
+                options = ['lemon-green', 'lemon', 'gold', 'amber', 'brown'];
+            } else if (wineType === 'red') {
+                options = ['purple', 'ruby', 'garnet', 'tawny', 'brown'];
+            } else if (wineType === 'rose') {
+                options = ['pink', 'salmon', 'orange'];
+            } else {
+                options = [];
+            }
+
+            colorSelect.innerHTML = '';
+
+            for (const optionValue of options) {
+                const option = document.createElement('option');
+                option.value = optionValue;
+                option.text = optionValue;
+                colorSelect.add(option);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Wine Image Generator</h1>
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="clarity">Clarity:</label>
+        <select id="clarity" name="clarity" required>
+            <option value="clear">Clear</option>
+            <option value="hazy">Hazy</option>
+        </select><br>
+
+        <label for="intensity">Intensity:</label>
+        <select id="intensity" name="intensity" required>
+            <option value="pale">Pale</option>
+            <option value="medium">Medium</option>
+            <option value="deep">Deep</option>
+        </select><br>
+
+        <label for="wine_type">Wine Type:</label>
+        <select id="wine_type" name="wine_type" onchange="updateColorOptions()" required>
+            <option value="white">White</option>
+            <option value="red">Red</option>
+            <option value="rose">Rose</option>
+        </select><br>
+
+        <label for="color">Color:</label>
+        <select id="color" name="color" required>
+            <!-- Options will be populated by JavaScript -->
+        </select><br>
+
+        <label for="wine_image">Upload wine bottle image:</label>
+        <input type="file" id="wine_image" name="wine_image" accept="image/*" required><br>
+
+        <input type="submit" value="Generate Images">
+    </form>
+    {% if wine_data %}
+    <h2>Submitted Data</h2>
+    <ul>
+        <li>Clarity: {{ wine_data.clarity }}</li>
+        <li>Intensity: {{ wine_data.intensity }}</li>
+        <li>Color: {{ wine_data.color }}</li>
+        <li>Wine Type: {{ wine_data.wine_type }}</li>
+        {% if wine_data.wine_image_path %}
+        <li>Wine Bottle Image: <img
+                src="{{ url_for('uploaded_file', filename=wine_data.wine_image_path.split('/')[-1]) }}"
+                alt="Wine bottle image" width="200"></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+
+    {% if generated_image %}
+    <h2>Generated Image</h2>
+    <img src="{{ generated_image }}" alt="Generated wine image" width="200">
+    {% endif %}
+
+    <script>
+        // Initialize color options on page load
+        updateColorOptions();
+    </script>
+</body>
+
+</html>
